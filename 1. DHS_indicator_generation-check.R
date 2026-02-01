@@ -1,7 +1,7 @@
 #******************************************************************#
 #   Creating Delivery Indicators from DHS 8 
 #         COUNTDOWN TO 2030 
-#         VER. 2 FEB 2025
+#         VER. 1 FEB 2026
 #******************************************************************#
 options(echo=F)
 
@@ -51,8 +51,8 @@ covariates <- c('wealth','urban.rural','age','education','marital.status','first
 ##****************************************************************************
 ##*                     IMPORT DHS DATA SETS
 ##**************************************************************************##
-for(index in 1:nrow(dhs) )  { # start DHS loop
-# index <- 1
+# for(index in 1:nrow(dhs) )  { # start DHS loop
+index <- 1
   year <- dhs$year[index]
   country <- dhs$country[index]
   folder <- paste0("data/",country)
@@ -142,21 +142,18 @@ for(index in 1:nrow(dhs) )  { # start DHS loop
   table(dat$ancq, dat$ancq2, exclude = NULL)
   table(dat$ancq, dat$ancq3, exclude = NULL)
   
+  table(dat$m14, dat$ancq, exclude=NULL)
+  table(dat$m14, dat$anc1, exclude=NULL)
+  table(dat$anc1, dat$ancq, exclude=NULL)
+  
   ## 4. IDELIV: Proportion of women who gave birth in a health facility (binary)
   
   home <- c(11,12,13,96) # same for all surveys
   facility <- c(21:42) # same for all surveys
- # if (dhs$country[index] %in% c("Mozambique")) {
-  #   basic  <- c(26, 36)
-  #   primary <- c(24)
-  #   secondary <- c(21,22,23,31) 
-  #   # }
-  # 
+
   dat$faclevel <- NA # No response
   dat$faclevel[(dat$m15 %in% home)] <- 0
   dat$faclevel[(dat$m15 %in% facility)] <- 1
-  # dat$faclevel[(dat$m15 %in% c(basic,primary))] <- 1 
-  # dat$faclevel[(dat$m15 %in% secondary)] <- 2
   
   dat$ideliv <- NA
   dat$ideliv[dat$faclevel==0] <- 0 # home birth
@@ -171,14 +168,27 @@ for(index in 1:nrow(dhs) )  { # start DHS loop
   dat$pncwm=NA
   
     dat$pncwm[ !(is.na(dat$m63)) | !(is.na(dat$m67))] <- 0
+    table(dat$m63, dat$pncwm, exclude=NULL)
+    table(dat$m67, dat$pncwm, exclude=NULL)
     dat$pncwm[(dat$m63 <= 201 & dat$ideliv==1)] <- 1 # facility births checked at facility <2 days after delivery
     dat$pncwm[(dat$m67 <= 201 & dat$ideliv==0)] <- 1 # home births checked <2 days after delivery
     dat$pncwm[(dat$m67 <= 201 & dat$ideliv==1)] <- 1 # facility births checked at home <2 days after delivery
     
-    # Set don't know responses to zero - drop from data set
+    table(dat$m63, dat$pncwm, exclude=NULL)
+    table(dat$m67, dat$pncwm, exclude=NULL)
+    
+    # m63 and m67 which are 998 will be set to zero unless they are less than 2d in other variable - see example below
+    test <- subset(dat, pncwm==1 & m67==998 )
+    table(test$m62) # replied yes
+    table(test$m63)
+    table(test$m66) # replied yes
+    table(test$m67) # replied dk
+    
+    # Set don't know responses to zero- don't drop from data set
     # dat$pncwm[dat$m63 >= 998 & dat$ideliv==1] <- 0 # DK responses (facility births checked at facility)
     # dat$pncwm[(dat$m67 >=998 & dat$ideliv==0)] <- 0 # DK responses (home births)
     # dat$pncwm[(dat$m67 >=998 & dat$ideliv==1)] <- 0 # DK responses (facility births checked at home)
+
   
   table(dat$pncwm,useNA="ifany")  
   
@@ -214,7 +224,11 @@ for(index in 1:nrow(dhs) )  { # start DHS loop
 # For the women who responded to the pncwm question, we want them included in quality check
   # dat$pncwmq_test[!(is.na(dat$pncwmq1)) & !(is.na(dat$pncwmq2)) & !(is.na(dat$pncwmq3))] <- 0
   dat$pncwmq[!(is.na(dat$pncwm))] <- 0
-  dat$pncwmq[dat$pncwmq1==1 & dat$pncwmq2==1 & dat$pncwmq3==1] <- 1
+  dat$pncwmq[dat$pncwmq1==1 & dat$pncwmq2==1 & dat$pncwmq3==1] <- 1 # women can have a quality check that wasn't within 2days
+  
+  # dat$pncwmq[!(is.na(dat$pncwm)) & dat$pncwmq1==1 & dat$pncwmq2==1 & dat$pncwmq3==1] <- 1
+  table(dat$pncwm, dat$pncwmq, exclude = NULL)
+  
   table(dat$pncwmq, exclude = NULL)
   table(dat$pncwmq, dat$pncwmq1, exclude = NULL)
   table(dat$pncwmq, dat$pncwmq2, exclude = NULL)
@@ -224,6 +238,12 @@ for(index in 1:nrow(dhs) )  { # start DHS loop
   table(dat$pncwm,dat$pncwmq1, exclude = NULL)
   table(dat$pncwm,dat$pncwmq2, exclude = NULL)
   table(dat$pncwm,dat$pncwmq3, exclude = NULL)
+  
+ test <- subset(dat, !is.na(pncwmq))
+  table(test$pncwmq, test$pncwm, exclude=NULL)
+  table(test$m63, test$m62, exclude=NULL) # how many had a check but don't know the timing?
+  table(test$m67, test$m66, exclude=NULL) # how many had a check but don't know the timing?
+  table(test$m63, test$pncwmq, exclude=NULL)
   
 ### 7. FP - Proportion of women who have their need for family planning satisfied with modern methods
   
@@ -257,6 +277,7 @@ for(index in 1:nrow(dhs) )  { # start DHS loop
   
   dat$pncn=NA
   
+ # if (dhs$country[index]=="Mozambique") {
     dat$pncn[ !(is.na(dat$m75)) | !(is.na(dat$m71))] <- 0
     dat$pncn[(dat$m75 <= 201 & dat$ideliv==1)] <- 1 # facility births checked at facility <2 days after delivery
     dat$pncn[(dat$m71 <= 201 & dat$ideliv==0)] <- 1 # home births checked <2 days after delivery
@@ -265,8 +286,7 @@ for(index in 1:nrow(dhs) )  { # start DHS loop
     # Set don't know responses to zero- don't drop from data set
     # dat$pncn[dat$m75 >= 998 & dat$ideliv==1] <- 0 # DK responses (facility births)
     # dat$pncn[(dat$m71 >=998 & dat$ideliv==0)] <- 0 # DK responses (home births)
-    # dat$pncn[(dat$m71 >=998 & dat$ideliv==1)] <- 0 # DK responses (home births)
-    
+  # }
   
   #9. PNCN CONTENT - Proportion of newborns with PNC visits who received standard interventions
   # Std interventions: a) examine cord, b) measure temperature, c) signs baby needs med attn, 

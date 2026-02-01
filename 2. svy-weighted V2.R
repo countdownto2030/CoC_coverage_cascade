@@ -1,5 +1,5 @@
-# last edited 31 Jan 2026
-# last run 31 Jan 2026
+# last edited 1 Feb 2026
+# last run 1 Feb 2026
 # Objective: get data files for survey-weighted and stratified results
 
 rm(list=ls())
@@ -15,7 +15,7 @@ library(dplyr)
 '%!in%' <- function(x,y)!('%in%'(x,y))
 
 date = substr(date(),5,10)
-dhs_date = "Dec  9"
+dhs_date = "Feb  9"
 
 
 location <- "/Users/EWilson/Desktop/DAC/QoC_continuum"
