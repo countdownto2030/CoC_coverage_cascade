@@ -1,17 +1,12 @@
-# last edited 1 Feb 2026
-# last run 1 Feb 2026
+# last edited 8 Feb 2026
+# last run 8 Feb 2026
 # Objective: draft figure
 
 rm(list=ls())
 
 ########################################################### Load Libraries
 library(ggplot2)
-# library(survey) #allows for design based analysis
-# library(RColorBrewer)
-# library(forcats)
 library(tidyverse)
-# library(scales)
-# library(stringr)
 library(cowplot)
 library(gridGraphics)
 library(gridExtra)
@@ -63,7 +58,7 @@ wrapper <- function(x, ...)
   paste(strwrap(x, ...), collapse = "\n")
 }
 
-my.title <- c("Contact and content indicators\n")
+# my.title <- c("Contact and content indicators\n")
 mycolors = c("cornflowerblue","red2","forestgreen","darkblue","tan4","magenta","darkgrey","firebrick4","purple3")
 
 df1_1 <- df1[df1$indicator %in% c("anc1","anc4","ancq","ideliv","pncwm","pncwmq","dps","pncn","pncnq") & df1$country!="pooled standard",]
@@ -76,16 +71,16 @@ graph <- ggplot() +
            position="dodge", stat="identity", alpha=0.65) +
   scale_y_continuous(limits=c(0,100),breaks=c(0,20,40,60,80,100)) +
   xlab("") +
-  ylab("coverage estimate %") +
-  ggtitle(my.title) +
+  ylab("intervention coverage") +
+  # ggtitle(my.title) +
   labs(col="") +
   theme_bw() +
   theme( # axis.ticks.y = element_blank(),axis.text.y = element_blank(), # get rid of y ticks/text
           text = element_text(size=12),     
           plot.tag.position = c(0.17,.99),
-          axis.title.y=element_text(size=16),
-          axis.text.y = element_text(size=14),
-          axis.text.x = element_text(size=10, vjust=.5),
+          axis.title.y=element_text(size=20),
+          axis.text.y = element_text(size=20),
+          axis.text.x = element_text(size=16, vjust=.5),
           plot.title = element_text(hjust = 0.5, size = 14)) +
   scale_x_discrete(labels=str_wrap(c("anc 1","anc 4","quality anc","facility delivery",
                                      "pnc check 2d wm","quality pnc wm","demand fam plan satisfied",

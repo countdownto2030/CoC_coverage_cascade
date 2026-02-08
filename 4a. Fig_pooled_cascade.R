@@ -137,16 +137,11 @@ fill_colors <- c(
 )
 
 legend_labels <- c(
-  # "pop" = "Population",
-  # "anc1" = "+ANC1",
-  # "anc4" = "+ANC4",
-  # "ancq" = "Quality ANC",
-  # "ideliv" = "Facility delivery",
-  "pncwm" = "PNC check 2d (Women)",
-  "pncwmq"  = "Quality PNC (Women)",
-  "dps"    = "Demand FP satisfied",
-  "pncn" = "PNC check 2d (Newborn)",
-  "pncnq"  = "Quality PNC (Newborn)"
+  pncn   = "PNC check 2d (Newborn)",
+  pncwm  = "PNC check 2d (Women)",
+  pncnq  = "Quality PNC (Newborn)",
+  pncwmq = "Quality PNC (Women)",
+  dps    = "Demand family planning satisfied"
 )
 
 
@@ -176,7 +171,8 @@ cascade <- ggplot(plot_data, aes(x = indicator_group, y = value)) +
   scale_fill_manual(
     values = fill_colors,
     breaks = c("pncn","pncwm","pncnq","pncwmq","dps"),  # legend order
-    labels = legend_labels
+    # labels = legend_labels
+    labels = stringr::str_wrap(legend_labels, width = 18)
   ) +
   
   # axes & labels
@@ -190,10 +186,12 @@ cascade <- ggplot(plot_data, aes(x = indicator_group, y = value)) +
   theme_bw() +
   theme(
     text = element_text(size = 13),
-    axis.text.x = element_text(hjust = 0.5),
+    axis.text.x = element_text(hjust = 0.5, size=16),
+    axis.text.y = element_text(size=16),
+    axis.title.y = element_text(size=20),
     legend.position = "bottom",
     legend.title = element_blank(),
-    legend.text = element_text(size = 10),
+    legend.text = element_text(size = 13),
     legend.key.width = unit(.5, "cm")
   )
 cascade

@@ -1,5 +1,5 @@
-# last edited 1 Feb 2026
-# last run 1 Feb 2026
+# last edited 8 Feb 2026
+# last run 8 Feb 2026
 # Objective: draft figure
 
 rm(list=ls())
@@ -34,7 +34,17 @@ fill_colors <- c(
   "dps"      = "#2171B5"
 )
 
-legend_order <- c("anc1","anc4","ancq","ideliv","pncn","pncwm","pncnq","pncwmq","dps")
+legend_order <- c(
+  "anc1",
+  "anc4",
+  "ancq",
+  "ideliv",
+  "pncwm",
+  "pncwmq",
+  "dps",
+  "pncn",
+  "pncnq"
+)
 
 legend_labels <- c(
   "anc1"   = "+ANC1",
@@ -51,8 +61,8 @@ legend_labels <- c(
 plot_titles <- sort(unique(data_country$country))
 cascades <- list()
 
- for(k in seq_along(plot_titles)){
-
+for(k in seq_along(plot_titles)){
+  
   country_data <- subset(data_country, country == plot_titles[k])
   
   # Add population row
@@ -75,14 +85,17 @@ cascades <- list()
   data_sums$use.this[data_sums$indicator=='casc_anc1_anc4'] <- 3
   data_sums$use.this[data_sums$indicator=='casc_anc1_anc4_ancq'] <- 4
   data_sums$use.this[data_sums$indicator=='casc_anc1_anc4_ancq_ideliv'] <- 5
-  data_sums$use.this[data_sums$indicator=='casc_anc1_anc4_ancq_ideliv_pncn'] <- 6
-  data_sums$use.this[data_sums$indicator=='casc_anc1_anc4_ancq_ideliv_pncwm'] <- 7
-  data_sums$use.this[data_sums$indicator=='casc_anc1_anc4_ancq_ideliv_pncn_pncnq'] <- 8
-  data_sums$use.this[data_sums$indicator=='casc_anc1_anc4_ancq_ideliv_pncwm_pncwmq'] <- 9
-  data_sums$use.this[data_sums$indicator=='casc_anc1_anc4_ancq_ideliv_pncwm_pncwmq_dps'] <- 10
+  data_sums$use.this[data_sums$indicator=='casc_anc1_anc4_ancq_ideliv_pncwm'] <- 6
+  data_sums$use.this[data_sums$indicator=='casc_anc1_anc4_ancq_ideliv_pncwm_pncwmq'] <- 7
+  data_sums$use.this[data_sums$indicator=='casc_anc1_anc4_ancq_ideliv_pncwm_pncwmq_dps'] <- 8
+  data_sums$use.this[data_sums$indicator=='casc_anc1_anc4_ancq_ideliv_pncn'] <- 9
+  data_sums$use.this[data_sums$indicator=='casc_anc1_anc4_ancq_ideliv_pncn_pncnq'] <- 10
   
   # Factor levels for plotting order
-  data_sums$indicator <- factor(data_sums$indicator, levels = data_sums$indicator[order(data_sums$use.this)])
+  data_sums$indicator <- factor(
+    data_sums$indicator,
+    levels = data_sums$indicator[order(data_sums$use.this)]
+  )
   
   data_sums$value <- data_sums$value * 100
   
@@ -91,6 +104,24 @@ cascades <- list()
     data_sums$indicator_plot,
     levels = c("pop", legend_order)
   )
+  
+  # -------------------------------------------------------
+  # <<< NEW: explicit numeric x positions with a small gap
+  # -------------------------------------------------------
+  data_sums$x_pos <- NA_real_
+  
+  data_sums$x_pos[data_sums$indicator_plot == "anc1"]   <- 1
+  data_sums$x_pos[data_sums$indicator_plot == "anc4"]   <- 2
+  data_sums$x_pos[data_sums$indicator_plot == "ancq"]   <- 3
+  data_sums$x_pos[data_sums$indicator_plot == "ideliv"] <- 4
+  data_sums$x_pos[data_sums$indicator_plot == "pncwm"]  <- 5
+  data_sums$x_pos[data_sums$indicator_plot == "pncwmq"] <- 6
+  data_sums$x_pos[data_sums$indicator_plot == "dps"]    <- 7
+  
+  # --- visual gap ---
+  data_sums$x_pos[data_sums$indicator_plot == "pncn"]   <- 8.4
+  data_sums$x_pos[data_sums$indicator_plot == "pncnq"]  <- 9.2
+  # -------------------------------------------------------
   
   # Remove population bar except first column in each row
   if(!k %in% c(1,6,11,16)) data_sums <- data_sums[data_sums$indicator != "pop",]
@@ -105,15 +136,20 @@ cascades <- list()
   
   # --- Create plot ---
   cascade <- 
-    ggplot(data_sums, aes(x = indicator_plot, y = value, fill = indicator_plot)) +
-    geom_bar(stat = "identity", position = position_dodge(width = 0.9), na.rm = TRUE) +
-    geom_text(aes(label = ifelse(indicator == "pop", "", round(value,0))),
-              position = position_dodge(width = 0.9), vjust = -0.05, na.rm = TRUE) +
+    ggplot(data_sums, aes(x = x_pos, y = value, fill = indicator_plot)) +  # <<< CHANGED x
+    geom_bar(stat = "identity", width = 0.8, na.rm = TRUE) +               # <<< CHANGED
+    geom_text(
+      aes(label = ifelse(indicator == "pop", "", round(value,0))),
+      vjust = -0.05,
+      size=5,
+      na.rm = TRUE
+    ) +
     scale_y_continuous(limits = c(0,100), breaks = seq(0,100,20)) +
+    scale_x_continuous(breaks = NULL, expand = expansion(mult = c(0.02, 0.05))) +  # <<< NEW
     scale_fill_manual(
       values = fill_colors,
-      breaks = c("anc1","anc4","ancq","ideliv","pncn","pncwm","pncnq","pncwmq","dps"),  # legend order
-      labels = legend_labels  # relabel
+      breaks = legend_order,
+      labels = legend_labels
     ) +
     ggtitle(plot_titles[k]) +
     xlab("") +
@@ -122,7 +158,7 @@ cascades <- list()
     theme(
       axis.text.x = element_blank(),
       axis.ticks.x = element_blank(),
-      axis.text.y = y_axis_text,
+      axis.text.y = element_text(size=16),
       axis.ticks.y = y_axis_ticks,
       plot.title = element_text(hjust = 0.5, size=16),
       axis.title.y = element_text(size=16),
@@ -139,11 +175,11 @@ legend_plot <- get_legend(
   ggplot(data_sums, aes(x=indicator, y=value, fill=indicator_plot)) +
     geom_bar(stat="identity") +
     scale_fill_manual(values = fill_colors,
-                      breaks = c("anc1","anc4","ancq","ideliv","pncn","pncwm","pncnq","pncwmq","dps"),
+                      breaks = legend_order,
                       labels = legend_labels) +
     theme(legend.position = "right",
           legend.title = element_blank(),
-          legend.text = element_text(size=12))
+          legend.text = element_text(size=15))
 )
 
 # --- Build grid ---
