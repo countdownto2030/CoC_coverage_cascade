@@ -42,7 +42,7 @@ svydata_pooled <- svydata_pooled %>% arrange(indicator, country)
 supplementary_file1 <- rbind(countrydata, svydata_pooled)
 
 
-write.xlsx(supplementary_file1,"/Users/EWilson/Desktop/DAC/QoC_continuum/supplementary_file1.xlsx")
+# write.xlsx(supplementary_file1,"/Users/EWilson/Desktop/DAC/QoC_continuum/supplementary_file1.xlsx")
 
 
 ########################################################### figure 1 write-up

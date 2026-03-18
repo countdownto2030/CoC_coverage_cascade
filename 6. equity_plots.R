@@ -157,7 +157,29 @@ plot_pncn <- paired_plot(
 
 combined_plot <- plot_anc + plot_pncwm + plot_pncn 
 
-ggsave(plot = combined_plot, height = 12, width = 18, dpi = 300,
-       filename = "/Users/EWilson/Desktop/DAC/QoC_continuum/results/Fig5.jpeg")
+# ggsave(plot = combined_plot, height = 12, width = 18, dpi = 300,
+#        filename = "/Users/EWilson/Desktop/DAC/QoC_continuum/results/Fig5.jpeg")
+
+
+
+
+
+
+
+
+######## look at average gaps by quintiles
+head(data_wide)
+
+avg_abs_gaps <- data_wide %>%
+  filter(covariate == "wealth") %>%
+  group_by(level) %>%
+  summarise(
+    anc_gap   = mean(abs(anc_gap), na.rm = TRUE),
+    pncwm_gap = mean(abs(pncwm_gap), na.rm = TRUE),
+    pncn_gap  = mean(abs(pncn_gap), na.rm = TRUE)
+  )
+
+
+
 
 

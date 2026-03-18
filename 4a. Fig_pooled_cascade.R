@@ -167,6 +167,13 @@ cascade <- ggplot(plot_data, aes(x = indicator_group, y = value)) +
     show.legend = TRUE
   ) +
   
+  geom_text(
+    aes(label = paste0(round(value, 1), "%")),
+    position = position_dodge2(width = 0.8, preserve = "single"),
+    vjust = -0.3,
+    size = 4
+  ) +
+
   # Legend only for colored bars in desired order
   scale_fill_manual(
     values = fill_colors,
@@ -176,7 +183,7 @@ cascade <- ggplot(plot_data, aes(x = indicator_group, y = value)) +
   ) +
   
   # axes & labels
-  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20)) +
+  scale_y_continuous(limits = c(0, 105), breaks = seq(0, 100, 20)) +
   scale_x_discrete(labels = str_wrap(
     c("population", "+anc1", "+anc4", "+quality anc", "+facility delivery",
       "+pnc check 2d", "+quality pnc", "+demand fam plan satisfied"),

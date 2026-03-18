@@ -57,11 +57,16 @@ countrydata_wide$gap_ancq_value <- countrydata_wide$anc1_value - countrydata_wid
 # View(countrydata_wide[,c("country","gap_ancq_value","anc1_value","ancq_value",
                          # "gap_pncnq_value","pncn_value","pncnq_value",
                          # "gap_pncwmq_value","pncwm_value","pncwmq_value")])
+mean(countrydata_wide$gap_ancq_value) ; sd(countrydata_wide$gap_ancq_value)
+mean(countrydata_wide$gap_pncwmq_value); sd(countrydata_wide$gap_pncwmq_value)
+mean(countrydata_wide$gap_pncnq_value); sd(countrydata_wide$gap_pncnq_value)
 
 ########################################################### CONTACT - CONTENT GAPS - POOOLED
 pooleddata_wide$gap_pncnq_value  <- pooleddata_wide$pncn_value - pooleddata_wide$pncnq_value
 pooleddata_wide$gap_pncwmq_value <- pooleddata_wide$pncwm_value - pooleddata_wide$pncwmq_value
 pooleddata_wide$gap_ancq_value <- pooleddata_wide$anc1_value - pooleddata_wide$ancq_value
+
+
 
 # View(pooleddata_wide[,c("level","gap_ancq_value","anc1_value","ancq_value",
                          # "gap_pncnq_value","pncn_value","pncnq_value",
